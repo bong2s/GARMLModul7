@@ -1,5 +1,6 @@
 import "./style.css";
 import { MODULE_TOPICS, type LessonTopic } from "./content/lessons";
+import { renderLesson } from "./content/renderLesson";
 import { createViewer, type ARState, type Viewer } from "./ar/engine";
 import { HotspotLayer } from "./ar/hotspots";
 import { MODEL_LAYOUT } from "./ar/config";
@@ -93,7 +94,7 @@ app.innerHTML = `
       <div class="info-category" id="info-category"></div>
       <h2 class="info-title" id="info-title"></h2>
       <div class="panel-tabs" id="panel-tabs" hidden></div>
-      <div class="info-body"><p id="info-body"></p></div>
+      <div class="info-body" id="info-body"></div>
     </section>
 
     <div class="ar-hud" id="ar-hud" hidden>
@@ -269,7 +270,8 @@ function showTopic(modelId: string, topic: LessonTopic): void {
   panel.style.setProperty("--panel-accent", color);
   infoCategory.textContent = topic.short;
   infoTitle.textContent = `${topicNumber(topic)} · ${topic.title}`;
-  infoBody.textContent = topic.description;
+  renderLesson(infoBody, topic);
+  panel.scrollTop = 0;
 
   const topics = getTopicsForModel(modelId);
   if (topics.length > 1) {
