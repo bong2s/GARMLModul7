@@ -59,7 +59,7 @@ export class ARSession {
         return;
       }
       const target = event.target as Element | null;
-      if (target && target.closest("button, .info-panel, .top-bar, .manip-bar, .component-flow, .ar-hud")) {
+      if (target && target.closest("button, .info-panel, .top-bar, .component-flow, .ar-hud")) {
         event.preventDefault();
       }
     };

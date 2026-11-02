@@ -51,20 +51,6 @@ app.innerHTML = `
         <button class="reset-btn" id="btn-reset-view" type="button">Reset View</button>
         <button class="ar-btn" id="btn-start-ar" type="button" disabled>Mulai AR</button>
       </div>
-      <div class="manip-bar" id="manip-bar" role="toolbar" aria-label="Kontrol model">
-      <div class="manip-group" role="group" aria-label="Mode manipulasi">
-        <button class="manip-btn active" id="vc-mode-individual" type="button">Individu</button>
-        <button class="manip-btn" id="vc-mode-all" type="button">Semua</button>
-      </div>
-      <div class="manip-group" role="group" aria-label="Zoom">
-        <button class="manip-btn manip-icon" id="vc-zoom-out" type="button" aria-label="Perkecil">&minus;</button>
-        <button class="manip-btn manip-icon" id="vc-zoom-in" type="button" aria-label="Perbesar">+</button>
-      </div>
-      <div class="manip-group" role="group" aria-label="Reset">
-        <button class="manip-btn" id="vc-reset-selected" type="button">Reset Terpilih</button>
-        <button class="manip-btn" id="vc-reset-all" type="button">Reset Semua</button>
-      </div>
-    </div>
       <div class="mode-badge" id="mode-badge">PRATINJAU 3D · bukan AR terlacak</div>
     </div>
 
@@ -118,13 +104,6 @@ const compNav = $<HTMLElement>("#comp-nav");
 const btnResetView = $<HTMLButtonElement>("#btn-reset-view");
 const btnStartAR = $<HTMLButtonElement>("#btn-start-ar");
 const modeBadge = $<HTMLElement>("#mode-badge");
-const manipBar = $<HTMLElement>("#manip-bar");
-const vcModeIndividual = $<HTMLButtonElement>("#vc-mode-individual");
-const vcModeAll = $<HTMLButtonElement>("#vc-mode-all");
-const vcZoomIn = $<HTMLButtonElement>("#vc-zoom-in");
-const vcZoomOut = $<HTMLButtonElement>("#vc-zoom-out");
-const vcResetSelected = $<HTMLButtonElement>("#vc-reset-selected");
-const vcResetAll = $<HTMLButtonElement>("#vc-reset-all");
 const gestureHints = $<HTMLElement>("#gesture-hints");
 const flow = $<HTMLElement>("#component-flow");
 const alurChips = $<HTMLElement>("#alur-chips");
@@ -202,9 +181,7 @@ function panelOffset(): number {
 function measureInsets(): { top: number; bottom: number; left: number; right: number } {
   const rect = canvasContainer.getBoundingClientRect();
   let top = topBar.getBoundingClientRect().bottom;
-  for (const el of [modeBadge, manipBar]) {
-    if (isShown(el)) top = Math.max(top, el.getBoundingClientRect().bottom);
-  }
+  if (isShown(modeBadge)) top = Math.max(top, modeBadge.getBoundingClientRect().bottom);
   top = Math.max(top - rect.top + 8, 0);
 
   let bottomEdge = rect.bottom;
@@ -250,14 +227,6 @@ function syncUi(): void {
     const comp = btn.dataset.comp!;
     btn.classList.toggle("active", comp === "all" ? mode === "all" : comp === sel);
   });
-  vcModeIndividual.classList.toggle("active", mode === "individual");
-  vcModeAll.classList.toggle("active", mode === "all");
-
-  const needsSelection = mode === "individual" && !sel;
-  for (const b of [vcZoomIn, vcZoomOut, vcResetSelected]) {
-    b.disabled = needsSelection;
-    b.title = needsSelection ? "Pilih satu model terlebih dahulu" : "";
-  }
   alurChips.querySelectorAll<HTMLElement>(".component-flow-item").forEach((chip) => {
     chip.classList.toggle("active", chip.dataset.topicId === activeTopicId);
   });
@@ -356,19 +325,6 @@ document.addEventListener("keydown", (event) => {
 
 btnResetView.addEventListener("click", resetEverything);
 
-vcModeIndividual.addEventListener("click", () => {
-  if (!viewer) return;
-  viewer.setMode("individual");
-  syncUi();
-  if (!viewer.getSelected()) setStatus("Mode Individu: ketuk satu model untuk memilihnya.", false);
-});
-vcModeAll.addEventListener("click", selectAll);
-vcZoomIn.addEventListener("click", () => viewer?.zoom(1));
-vcZoomOut.addEventListener("click", () => viewer?.zoom(-1));
-vcResetSelected.addEventListener("click", () => {
-  if (viewer && !viewer.resetSelected()) setStatus("Belum ada model yang dipilih.", false);
-});
-vcResetAll.addEventListener("click", () => viewer?.resetAll());
 
 // ---------------------------------------------------------------------------
 // AR (state, HUD, buttons)
