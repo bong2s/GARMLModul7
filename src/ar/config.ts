@@ -1,12 +1,17 @@
-// Scene-composition configuration for the three Modul 8 models.
+// Scene-composition configuration for the three Modul 7 models.
 //
-// Arrangement: CPU → Circuit Board → RAM (two models behind, one in front,
-// whole layout centred on the origin — same composition pattern as Modul 7).
+// The numbers here are NOT copied from Modul 6. They are derived from the real
+// bounding boxes of Modul 7's own GLB files (see README → "Per-model geometry"):
 //
-// The numbers are layout defaults; orientation correction is applied per model
-// from the real bounding box of each GLB (see engine.ts → assemble). When a
-// requested GLB is not yet present, the engine substitutes a coloured placeholder
-// so the app still builds and runs.
+//   CPU.glb           native 3.4061 × 3.4061 × 0.1112 (Z-up FBX, plate lies in XY)
+//                     → rotateX(−π/2) so the plate lies flat, +Z face up
+//   Computer_Chip.glb native 2.1107 × 1.7956 × 3.9446 (Y-up DIP chip, pins point −Y)
+//                     → used as authored (stands on its pins)
+//   calculator.glb    native 0.1528 × 0.0268 × 0.2011 after its root-node matrix
+//                     (already Y-up, lies flat with the keypad up) → used as authored
+//
+// `targetSize` is the longest side AFTER orientation correction. Different values
+// are used so that the three footprints have comparable visual weight.
 
 export interface ModelLayout {
   /** Display name used for the hotspot label and the top navigation. */
@@ -27,15 +32,16 @@ export const MODEL_LAYOUT: Record<string, ModelLayout> = {
     color: "#38bdf8",
     targetSize: 2.6,
     cell: [-2.5, -2.0],
+    rotateX: -Math.PI / 2,
   },
-  "circuit-board": {
-    label: "CIRCUIT BOARD",
-    color: "#34d399",
+  "computer-chip": {
+    label: "CHIP KOMPUTER",
+    color: "#a78bfa",
     targetSize: 2.5,
     cell: [2.5, -2.0],
   },
-  "ddr5-ram": {
-    label: "RAM DDR5",
+  calculator: {
+    label: "KALKULATOR",
     color: "#fb923c",
     targetSize: 2.1,
     cell: [0, 2.0],
