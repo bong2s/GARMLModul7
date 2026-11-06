@@ -1,11 +1,12 @@
-// Learning content definitions for Modul 7 (Aritmetika Komputer).
+// Learning content definitions for Modul 8 (Set Instruksi).
 //
 // Topics, in learning order:
-//   1. ALU
-//   2. Representasi Integer
-//   3. Aritmetika Integer
-//   4. Representasi Floating-Point
-//   5. Aritmetika Floating-Point
+//   1. Karakteristik Instruksi
+//   2. Jenis Operand
+//   3. Jenis Operasi
+//   4. Bahasa Rakitan (Assembly)
+//   5. Pengalamatan (Addressing)
+//   6. Format Instruksi
 
 export type LessonBlock =
   | { kind: "heading"; text: string }
@@ -23,261 +24,238 @@ export interface LessonTopic {
 
 export const MODULE_TOPICS: LessonTopic[] = [
   {
-    id: "alu",
-    title: "ALU",
-    short: "Arithmetic Logic Unit",
+    id: "instruction-characteristics",
+    title: "Karakteristik Instruksi",
+    short: "Sifat dasar instruksi mesin",
     blocks: [
-      { kind: "heading", text: "Fungsi ALU" },
+      { kind: "heading", text: "Apa itu instruksi mesin" },
       {
         kind: "text",
-        text: "ALU (Arithmetic Logic Unit) adalah bagian CPU yang melakukan operasi aritmetika dan logika. ALU mengambil dua operan dari register, sinyal kontrol dari unit kontrol menentukan operasi yang dijalankan, dan hasilnya dikirim kembali ke register.",
+        text: "Instruksi mesin (machine instruction) adalah perintah yang dapat dijalankan langsung oleh CPU. Setiap instruksi didefinisikan oleh format biner tertentu dan dikerjakan oleh unit kontrol bersama ALU.",
       },
-      { kind: "heading", text: "Jenis operasi" },
+      { kind: "heading", text: "Karakteristik utama" },
       {
         kind: "list",
         ordered: false,
         items: [
-          "Aritmetika: penjumlahan, pengurangan, perkalian, dan pembagian.",
-          "Logika: AND, OR, NOT, XOR, serta shift (geser) bit.",
+          "Operation code (opcode): kode operasi yang menentukan apa yang dikerjakan CPU.",
+          "Operand: data atau alamat yang menjadi sasaran operasi.",
+          "Mode pengalamatan: cara CPU menafsirkan field operand menjadi alamat data.",
+          "Format dan panjang: jumlah bit serta susunan field dalam instruksi.",
         ],
       },
-      { kind: "heading", text: "Status flag" },
-      { kind: "text", text: "Setiap operasi juga menghasilkan status flag:" },
-      {
-        kind: "list",
-        ordered: false,
-        items: [
-          "Z (Zero): bernilai 1 jika hasil nol.",
-          "N (Negative): bernilai 1 jika bit paling kiri hasil bernilai 1.",
-          "C (Carry): bernilai 1 jika ada carry keluar dari bit paling kiri, relevan untuk bilangan tak bertanda.",
-          "V (Overflow): bernilai 1 jika hasil bertanda berada di luar rentang, relevan untuk bilangan bertanda. C dan V adalah dua hal yang berbeda.",
-        ],
-      },
-      { kind: "heading", text: "Contoh 4-bit" },
-      { kind: "text", text: "0101 (+5) + 0011 (+3):" },
-      { kind: "example", lines: ["  0101   (+5)", "+ 0011   (+3)", "-------", "  1000   (-8)"] },
-      {
-        kind: "text",
-        text: "Tidak ada carry keluar (C = 0), tetapi dua operan positif menghasilkan 1000, yaitu −8 dalam two's complement. Maka V = 1, N = 1, dan Z = 0.",
-      },
-      {
-        kind: "text",
-        text: "Instruksi berikutnya, seperti instruksi percabangan, membaca flag ini untuk mengambil keputusan.",
-      },
-    ],
-  },
-  {
-    id: "integer-representation",
-    title: "Representasi Integer",
-    short: "Bilangan bulat dalam biner",
-    blocks: [
-      { kind: "heading", text: "Bilangan tak bertanda" },
-      {
-        kind: "text",
-        text: "Bilangan bulat tak bertanda (unsigned) ditulis langsung dalam biner. Dengan n bit, nilainya berkisar dari 0 sampai 2^n − 1.",
-      },
-      { kind: "heading", text: "Bilangan bertanda" },
-      { kind: "text", text: "Untuk bilangan bertanda, bit paling kiri dipakai sebagai tanda. Ada dua cara umum:" },
-      {
-        kind: "list",
-        ordered: false,
-        items: [
-          "Sign-magnitude: menyimpan tanda dan besaran secara terpisah. Cara ini memiliki dua representasi nol (+0 dan −0), dan penjumlahannya memerlukan logika khusus.",
-          "Two's complement: dibentuk dengan membalik semua bit lalu menambahkan 1.",
-        ],
-      },
-      { kind: "heading", text: "Membentuk two's complement" },
-      { kind: "text", text: "Contoh 8-bit untuk −5:" },
+      { kind: "heading", text: "Siklus eksekusi" },
+      { kind: "text", text: "Setiap instruksi melewati tahapan berikut:" },
       {
         kind: "list",
         ordered: true,
         items: [
-          "Tulis +5 dalam biner: 0000 0101.",
-          "Balik semua bit: 1111 1010.",
-          "Tambahkan 1: 1111 1011, yaitu −5.",
-        ],
-      },
-      { kind: "heading", text: "Rentang nilai" },
-      { kind: "formula", text: "n-bit: −2^(n−1) sampai 2^(n−1) − 1" },
-      { kind: "text", text: "Untuk 8 bit, rentangnya −128 sampai +127." },
-      {
-        kind: "text",
-        text: "Two's complement banyak dipakai karena nol hanya memiliki satu representasi. Penjumlahan maupun pengurangan juga dapat dikerjakan oleh rangkaian penjumlah yang sama.",
-      },
-      { kind: "heading", text: "Sign extension" },
-      {
-        kind: "text",
-        text: "Sign extension menyalin bit tanda ke posisi kiri saat bilangan dipindah ke wadah yang lebih lebar, sehingga nilainya tidak berubah. Contoh −5:",
-      },
-      { kind: "example", lines: ["8-bit   1111 1011", "16-bit  1111 1111 1111 1011"] },
-    ],
-  },
-  {
-    id: "integer-arithmetic",
-    title: "Aritmetika Integer",
-    short: "Operasi pada bilangan bulat",
-    blocks: [
-      { kind: "heading", text: "Penjumlahan biner" },
-      {
-        kind: "text",
-        text: "Penjumlahan dilakukan bit demi bit dari kanan, dengan carry diteruskan ke posisi berikutnya. Pengurangan A − B dikerjakan sebagai A + (two's complement dari B).",
-      },
-      { kind: "heading", text: "Carry dan signed overflow" },
-      {
-        kind: "list",
-        ordered: false,
-        items: [
-          "Carry adalah carry keluar dari bit paling kiri. Carry relevan untuk bilangan tak bertanda.",
-          "Signed overflow terjadi ketika dua operan bertanda sama menghasilkan hasil dengan tanda berlawanan. Kondisi ini terdeteksi bila carry masuk ke bit tanda berbeda dengan carry keluar dari bit tanda.",
-        ],
-      },
-      { kind: "heading", text: "Contoh overflow" },
-      { kind: "text", text: "127 + 1 pada 8-bit two's complement:" },
-      {
-        kind: "example",
-        lines: ["  0111 1111   (+127)", "+ 0000 0001   (+1)", "-------------", "  1000 0000   (-128)"],
-      },
-      {
-        kind: "text",
-        text: "Carry keluarnya 0, tetapi terjadi signed overflow karena dua operan positif menghasilkan bilangan negatif.",
-      },
-      { kind: "heading", text: "Perkalian" },
-      {
-        kind: "text",
-        text: "Perkalian dilakukan dengan shift-and-add: setiap bit 1 pada pengali menambahkan multiplicand yang sudah digeser sesuai posisi bitnya.",
-      },
-      { kind: "text", text: "Algoritma Booth memeriksa dua bit pengali, Q0 dan Q−1:" },
-      {
-        kind: "list",
-        ordered: false,
-        items: [
-          "Pola 10: kurangkan multiplicand.",
-          "Pola 01: tambahkan multiplicand.",
-          "Pola 00 dan 11: tidak melakukan apa-apa.",
-        ],
-      },
-      { kind: "text", text: "Setelah itu, hasil digeser secara aritmetika ke kanan." },
-      { kind: "heading", text: "Pembagian" },
-      { kind: "text", text: "Pembagian dilakukan dengan shift dan pengurangan berulang:" },
-      {
-        kind: "list",
-        ordered: true,
-        items: [
-          "Geser sisa ke kiri.",
-          "Kurangkan divisor dari sisa.",
-          "Jika hasilnya tidak negatif, bit hasil bernilai 1 dan sisa diperbarui.",
-          "Jika hasilnya negatif, bit hasil bernilai 0 dan sisa dikembalikan.",
+          "Fetch: instruksi diambil dari memori ke register instruksi.",
+          "Decode: unit kontrol menerjemahkan opcode dan mode pengalamatan.",
+          "Operand fetch: operand diambil dari register atau memori.",
+          "Execute: ALU atau unit lain menjalankan operasi.",
+          "Write-back: hasil ditulis kembali ke register atau memori.",
         ],
       },
     ],
   },
   {
-    id: "floating-point-representation",
-    title: "Representasi Floating-Point",
-    short: "Standar IEEE 754",
+    id: "operand-types",
+    title: "Jenis Operand",
+    short: "Data yang diproses instruksi",
     blocks: [
-      { kind: "heading", text: "Mengapa floating-point" },
+      { kind: "heading", text: "Pengertian operand" },
       {
         kind: "text",
-        text: "Bit yang terbatas tidak dapat menyatakan semua bilangan real, terutama bilangan yang sangat besar, sangat kecil, atau pecahan. Floating-point mengatasi hal ini dengan notasi ilmiah biner:",
+        text: "Operand adalah data yang diproses oleh instruksi. CPU umumnya berinteraksi dengan operand melalui register dan memori. Jenis operand menentukan lebar data dan bentuk nilai yang dapat ditangani.",
       },
-      { kind: "formula", text: "1.xxx × 2^E" },
-      { kind: "text", text: "Contoh: 110.1₂ = 1.101₂ × 2²." },
-      { kind: "heading", text: "Format IEEE 754" },
-      { kind: "text", text: "Standar IEEE 754 menyimpan tiga bagian: bit tanda (S), eksponen, dan fraksi." },
+      { kind: "heading", text: "Jenis operand umum" },
       {
         kind: "list",
         ordered: false,
         items: [
-          "Single precision: 32 bit (1 bit tanda, 8 bit eksponen, 23 bit fraksi, bias 127).",
-          "Double precision: 64 bit (1 bit tanda, 11 bit eksponen, 52 bit fraksi, bias 1023).",
+          "Alamat memori: menunjuk lokasi data di RAM.",
+          "Nilai data (immediate): konstanta yang langsung tertulis di dalam instruksi.",
+          "Register: operand berada di register CPU.",
+          "I/O port: operand berupa port masukan/keluaran untuk perangkat luar.",
         ],
       },
-      { kind: "heading", text: "Nilai bilangan ternormalisasi" },
+      { kind: "heading", text: "Lebar data" },
       {
         kind: "text",
-        text: "Eksponen disimpan sebagai eksponen sebenarnya ditambah bias. Bit depan selalu 1, sehingga tidak disimpan (hidden bit). Nilainya:",
+        text: "Lebar operand mengikuti ukuran register dan bus data arsitektur. Contoh pada CPU modern:",
       },
-      { kind: "formula", text: "(−1)^S × 1.F × 2^(E − bias)" },
-      { kind: "heading", text: "Contoh 6,5" },
-      { kind: "text", text: "6,5 = 110.1₂ = 1.101₂ × 2², sehingga:" },
-      {
-        kind: "list",
-        ordered: true,
-        items: [
-          "Tanda: 0.",
-          "Eksponen: 2 + 127 = 129 = 1000 0001.",
-          "Fraksi: 101 diikuti nol.",
-        ],
-      },
-      { kind: "example", lines: ["0 10000001 10100000000000000000000", "Heksadesimal: 40D00000"] },
-      { kind: "heading", text: "Nilai khusus" },
       {
         kind: "list",
         ordered: false,
         items: [
-          "Nol: eksponen dan fraksi semua 0.",
-          "Denormal (subnormal): eksponen semua 0 dengan fraksi tidak nol, bit tersirat 0. Dipakai untuk nilai yang sangat dekat nol.",
-          "Infinity: eksponen semua 1 dengan fraksi 0.",
-          "NaN: eksponen semua 1 dengan fraksi tidak nol. Dipakai untuk hasil tak terdefinisi, seperti 0/0.",
+          "8 bit: 1 byte.",
+          "16 bit: 1 word.",
+          "32 bit: 1 double word.",
+          "64 bit: 1 quad word.",
         ],
-      },
-      { kind: "heading", text: "Keterbatasan presisi" },
-      {
-        kind: "text",
-        text: "Banyak pecahan, misalnya 0,1, tidak dapat disimpan secara tepat sehingga terjadi pembulatan.",
       },
     ],
   },
   {
-    id: "floating-point-arithmetic",
-    title: "Aritmetika Floating-Point",
-    short: "Operasi pada bilangan desimal",
+    id: "operation-types",
+    title: "Jenis Operasi",
+    short: "Kategori instruksi CPU",
     blocks: [
-      { kind: "heading", text: "Penjumlahan dan pengurangan" },
-      { kind: "text", text: "Dikerjakan dalam lima tahap:" },
+      { kind: "heading", text: "Kelompok operasi" },
+      {
+        kind: "text",
+        text: "Instruction set sebuah CPU dikelompokkan berdasarkan jenis operasi yang dilakukan. Pengelompokan ini membantu menyusun rutin program dan memahami kemampuan prosesor.",
+      },
+      { kind: "heading", text: "Operasi data transfer" },
+      {
+        kind: "text",
+        text: "Memindahkan data antar register dan memori tanpa mengubah nilainya.",
+      },
+      { kind: "example", lines: ["MOV  R0, R1     ; salin R1 ke R0", "LOAD R2, [0x1000] ; ambil dari memori", "STORE [0x1004], R2 ; simpan ke memori"] },
+      { kind: "heading", text: "Operasi aritmetika dan logika" },
       {
         kind: "list",
-        ordered: true,
+        ordered: false,
         items: [
-          "Cek nol: jika salah satu operan nol, hasilnya adalah operan lainnya.",
-          "Samakan eksponen: significand bilangan dengan eksponen lebih kecil digeser ke kanan sebanyak selisih eksponen.",
-          "Jumlahkan atau kurangkan significand.",
-          "Normalisasi hasil: geser significand hingga bit 1 berada di depan, lalu sesuaikan eksponen.",
-          "Bulatkan hasil, lalu periksa overflow (eksponen terlalu besar) atau underflow (eksponen terlalu kecil).",
+          "Aritmetika: ADD, SUB, MUL, DIV.",
+          "Logika: AND, OR, NOT, XOR.",
+          "Shift/rotate: SHL, SHR, ROL, ROR.",
         ],
       },
-      { kind: "heading", text: "Perkalian" },
-      { kind: "formula", text: "E = E1 + E2 − bias" },
+      { kind: "heading", text: "Operasi kontrol aliran" },
       {
         kind: "text",
-        text: "Significand dikalikan, tanda hasil adalah XOR dari kedua tanda, lalu hasil dinormalisasi dan dibulatkan.",
+        text: "Mengubah urutan eksekusi instruksi melalui percabangan dan lompatan.",
       },
-      { kind: "heading", text: "Pembagian" },
-      { kind: "formula", text: "E = E1 − E2 + bias" },
-      {
-        kind: "text",
-        text: "Significand dibagi, lalu hasil dinormalisasi dan dibulatkan.",
-      },
-      { kind: "heading", text: "Pembulatan dan urutan operasi" },
-      {
-        kind: "text",
-        text: "Hasil floating-point dapat berbeda dari hasil matematis yang eksak karena pembulatan dilakukan pada setiap tahap. Akibatnya, urutan operasi dapat mengubah hasil, dan dua perhitungan yang secara matematis sama bisa menghasilkan nilai yang sedikit berbeda.",
-      },
-      { kind: "heading", text: "Contoh: 1,5 + 2,25 = 3,75" },
-      { kind: "text", text: "1,5 = 1,1₂ × 2⁰ dan 2,25 = 1,001₂ × 2¹." },
+      { kind: "example", lines: ["JMP  label     ; lompat tanpa syarat", "BEQ  R0, R1, label ; lompat jika R0 = R1", "CALL func      ; panggil subrutin", "RET            ; kembali dari subrutin"] },
+      { kind: "heading", text: "Operasi I/O dan sistem" },
       {
         kind: "list",
-        ordered: true,
+        ordered: false,
         items: [
-          "Cek nol: kedua operan tidak nol.",
-          "Samakan eksponen ke 1: significand 1,1₂ digeser satu posisi ke kanan menjadi 0,11₂.",
-          "Jumlahkan: 0,11₂ + 1,001₂ = 1,111₂.",
-          "Normalisasi: 1,111₂ sudah ternormalisasi, sehingga eksponen tetap 1.",
-          "Pembulatan tidak diperlukan karena tidak ada bit yang terbuang.",
+          "I/O: IN, OUT untuk berkomunikasi dengan perangkat luar.",
+          "Sistem: SYSCALL, INT untuk masuk ke layanan sistem operasi.",
+          "Kontrol CPU: HALT, NOP, EI/DI (enable/disable interrupt).",
         ],
       },
-      { kind: "formula", text: "Hasil: 1,111₂ × 2¹ = 11,11₂ = 3,75₁₀" },
+    ],
+  },
+  {
+    id: "assembly-language",
+    title: "Bahasa Rakitan (Assembly)",
+    short: "Representasi teks instruksi",
+    blocks: [
+      { kind: "heading", text: "Apa itu bahasa rakit" },
+      {
+        kind: "text",
+        text: "Bahasa rakit (assembly) adalah representasi teks dari instruksi mesin. Setiap baris biasanya mewakili satu instruksi mesin, ditulis dengan mnemonic yang lebih mudah dibaca daripada opcode biner.",
+      },
+      { kind: "heading", text: "Struktur baris assembly" },
+      { kind: "formula", text: "[label:] mnemonic [operand1[, operand2]] [; komentar]" },
+      { kind: "example", lines: ["loop:  MOV  R0, #5      ; R0 = 5", "       ADD  R0, R0, #1   ; R0 = R0 + 1", "       CMP  R0, #10      ; bandingkan dengan 10", "       BLT  loop         ; ulangi jika R0 < 10"] },
+      { kind: "heading", text: "Mnemonic vs opcode" },
+      {
+        kind: "text",
+        text: "Mnemonic adalah nama singkat operasi (mis. ADD, MOV). Opcode adalah nilai biner yang sesuai. Assembler menerjemahkan mnemonic dan operand menjadi kode mesin.",
+      },
+      { kind: "example", lines: ["ADD R0, R1, R2  ; sumber assembly", "0xE0810002      ; hasil kode mesin (ARM)"] },
+      { kind: "heading", text: "Direktif assembler" },
+      {
+        kind: "list",
+        ordered: false,
+        items: [
+          "Data directive: mendefinisikan konstanta atau data, mis. DB, DW, DD.",
+          "Section: memisahkan kode dan data, mis. .text, .data, .bss.",
+          "Symbol/label: nama alamat untuk lompatan dan referensi data.",
+        ],
+      },
+    ],
+  },
+  {
+    id: "addressing",
+    title: "Pengalamatan (Addressing)",
+    short: "Cara menafsirkan operand",
+    blocks: [
+      { kind: "heading", text: "Mode pengalamatan" },
+      {
+        kind: "text",
+        text: "Mode pengalamatan (addressing mode) adalah cara CPU menafsirkan field operand menjadi alamat data yang sesungguhnya. Pilihan mode memengaruhi panjang instruksi dan kecepatan eksekusi.",
+      },
+      { kind: "heading", text: "Mode umum" },
+      {
+        kind: "list",
+        ordered: false,
+        items: [
+          "Immediate: operand adalah nilai konstanta di dalam instruksi.",
+          "Register: operand berada di register yang disebut namanya.",
+          "Direct (absolute): field berisi alamat memori lengkap.",
+          "Register indirect: register menampung alamat memori.",
+          "Displacement (based): alamat = nilai register + offset konstanta.",
+          "Indexed: alamat = base register + index register (× skala).",
+          "PC-relative: alamat = alamat instruksi sekarang + offset.",
+        ],
+      },
+      { kind: "heading", text: "Contoh tiap mode" },
+      { kind: "example", lines: ["MOV R0, #10         ; immediate", "MOV R0, R1          ; register", "MOV R0, [0x1000]    ; direct", "MOV R0, [R1]        ; register indirect", "MOV R0, [R1 + #4]   ; displacement", "MOV R0, [R1 + R2*4] ; indexed", "BEQ  +8             ; PC-relative"] },
+      { kind: "heading", text: "Kapan dipakai" },
+      {
+        kind: "list",
+        ordered: false,
+        items: [
+          "Immediate: konstanta kecil yang sudah diketahui saat kompilasi.",
+          "Register dan register indirect: operasi pada data di register dan penelusuran pointer.",
+          "Displacement/indexed: akses elemen struktur data dan larik.",
+          "PC-relative: kode tidak tergantung lokasi muat (position-independent code).",
+        ],
+      },
+    ],
+  },
+  {
+    id: "instruction-format",
+    title: "Format Instruksi",
+    short: "Susunan bit instruksi",
+    blocks: [
+      { kind: "heading", text: "Apa itu format instruksi" },
+      {
+        kind: "text",
+        text: "Format instruksi menentukan bagaimana bit-bit sebuah instruksi dibagi menjadi field, seperti opcode, operand, dan mode pengalamatan. Format yang efisien menghemat ruang memori sekaligus tetap memungkinkan dekode cepat.",
+      },
+      { kind: "heading", text: "Field umum" },
+      {
+        kind: "list",
+        ordered: false,
+        items: [
+          "Opcode: kode operasi.",
+          "Operand / register field: menentukan register sumber dan tujuan.",
+          "Mode field: menentukan mode pengalamatan.",
+          "Immediate/displacement: konstanta atau offset.",
+        ],
+      },
+      { kind: "heading", text: "Format dasar" },
+      {
+        kind: "list",
+        ordered: false,
+        items: [
+          "Format satu operand: opcode + satu operand.",
+          "Format dua operand: opcode + dua operand.",
+          "Format tiga operand: opcode + tiga register (umum pada RISC).",
+          "Format variabel: panjang instruksi berbeda-beda (umum pada CISC).",
+        ],
+      },
+      { kind: "heading", text: "Contoh format 16-bit (3 register)" },
+      { kind: "text", text: "Opcode 4 bit, masing-masing register 4 bit, mode 4 bit:" },
+      { kind: "example", lines: ["| 15:12 opcode | 11:8 Rd | 7:4 Rs1 | 3:0 Rs2 |", "  ADD  R0,   R1,    R2", "  0010 0000  0001   0010"] },
+      { kind: "heading", text: "Pertimbangan desain" },
+      {
+        kind: "list",
+        ordered: false,
+        items: [
+          "Panjang tetap: dekode cepat dan pipelining sederhana (RISC).",
+          "Panjang variabel: hemat ruang untuk instruksi umum (CISC).",
+          "Jumlah register: field register yang lebih lebar mendukung lebih banyak register tetapi memperpanjang instruksi.",
+        ],
+      },
     ],
   },
 ];

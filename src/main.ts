@@ -51,7 +51,7 @@ app.innerHTML = `
         <button class="reset-btn" id="btn-reset-view" type="button">Reset View</button>
         <button class="ar-btn" id="btn-start-ar" type="button" disabled>Mulai AR</button>
       </div>
-      <div class="mode-badge" id="mode-badge">PRATINJAU 3D · bukan AR terlacak</div>
+      <div class="mode-badge" id="mode-badge">MODUL 8 · SET INSTRUKSI · PRATINJAU 3D</div>
     </div>
 
     <div class="gesture-hints" id="gesture-hints">
@@ -430,7 +430,7 @@ function start(): void {
     onFrame: () => hotspots?.update(),
     onARState: handleARState,
     onAREnded: handleAREnded,
-    onARInfo: (info) => console.debug("MODUL7 AR:", info.mode, info.note ?? "", info.reason ?? "", `${info.widthM.toFixed(2)} m`),
+    onARInfo: (info) => console.debug("MODUL8 AR:", info.mode, info.note ?? "", info.reason ?? "", `${info.widthM.toFixed(2)} m`),
   });
 
   // Development-only inspection hook (removed from production builds by Vite).
